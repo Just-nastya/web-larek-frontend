@@ -1,48 +1,47 @@
 /** Интерфейс, который описывает элемент продукта */
-interface IProductItem {
+export interface IProductItem {
 	id: string; // уникальный идентификатор продукта
 	title: string; // название продукта
 	description: string; // описание продукта
 	image: string; // URL-адрес изображения продукта
 	category: string; // категория продукта
 	price: number | null; // цена продукта, если нет цены, то товар бесценен
+	inBasket: boolean; // наличие продукта в корзине
 }
 
 
 /** Товар в корзине (дополнительно индекс для отображения) */
-export interface IBasketItem extends IProductItem {
-    index: number;
+export interface IBasketItem {
+    index: number; // индекс продукта в корзине
 }
 
 
-/** интерфейс, который описывает данные в форме заказа */
+/** Интерфейс, который описывает данные в форме заказа--надо?*/
 export interface IOrderForm { 
-	paymentMethod?: string; // способ оплаты
+	paymentMethod?: 'card' | 'cash'; // способ оплаты
 	deliveryAddress?: string; // адрес доставки 
 	contactPhone?: string; // контактный номер телефона
 	contactEmail?: string; // контактный адрес электронной почты
-    totalAmount?: number; // общая стоимость заказа
 }
 
 
-/** интерфейс, который описывает полные данные заказа для отправки по API */
+/** Интерфейс, который описывает полные данные заказа для отправки по API */
 export interface IOrder { 
-	paymentMethod: string; // способ оплаты
-	deliveryAddress: string; // адрес доставки 
-	contactPhone: string; // контактный номер телефона
-	contactEmail: string; // контактный адрес электронной почты
-    totalAmount: number; // общая стоимость заказа
-	productItems: string[]; // массив идентификаторов продуктов, которые были выбраны пользователем
+	total: number;
+    items: string[];
+    email: string;
+    phone: string;
+    address: string;
+    payment: 'card' | 'cash';
 }
 
 
 /** интерфейс, который описывает результат успешного заказа от API */
 export interface IOrderResult { 
-	orderId: string; // уникальный идентификатор заказа
-	totalAmount: number; // общая стоимость заказа 
+	id: string; // уникальный идентификатор заказа
+	total: number; // общая стоимость заказа 
 }
 
 
 /** Ошибки формы */
 export type FormValidationErrors = Partial<Record<keyof IOrder, string>>;
-

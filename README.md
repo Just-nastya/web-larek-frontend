@@ -61,25 +61,45 @@ yarn build
 ## Model. Модели данных
 Модель получает информацию с сервера и передаёт её `View` для отображения. Каждая модель представляет собой независимый компонент, который может использовать данные и обновлять их по мере необходимости.
 
-- `DataProduct` —  класс управляет данными о продуктах.
+
+
+
+/*
+- `CardModel` —  класс управляет данными о продуктах.
 ```
 **Поля:**
-- `id: string;` — уникальный идентификатор продукта.
-- `title: string;` — название продукта.
-- `description: string;` — описание продукта.
-- `image: string;` — URL-адрес изображения продукта.
-- `category: string;` — категория продукта.
-- `price: number | null;` — цена продукта, если нет цены, то товар бесценен.
+- `items: IProductItem[]` — массив продуктов.
+
+**Методы:**
+- `setItems(items: IProductItem[])` — сохраняет список продуктов.
+- `getItems()(items: IProductItem[])` — возвращает список продуктов.
+- `getItem(id:string): IProductItem ` — возвращает продукт по id.
+- `getItemsInBasket(): number` — возвращает кол-во продуктов в корзине.
+- `getIdItemsInBasket(): IProductItem[]` — возвращает массив продуктов в корзине.
+- `getTotalAmount(): number` — возвращает сумму продуктов в корзине.
+- `clearBasket(): void` — убирает все продукты из корзины.
 ```
 
-- `DataBuyer` —  класс управляет данными о покупателе.
+- `FormModel` —  класс управляет данными покупателя.
 ```
 **Поля:**
-- `paymentMethod: 'card' | 'cash' | '';` — способ оплаты.
-- `deliveryAddress: string; ` — адрес доставки.
-- `contactPhone: string;` — контактный номер телефона.
+- `paymentMethod: 'card' | 'cash'` — способ оплаты.
 - `contactEmail: string;` — контактный адрес электронной почты.
-```
+- `contactPhone: string;` — контактный номер телефона
+- `deliveryAddress: string;` —  адрес доставки 
+
+**Методы:**
+- `clearErrors(): void` — очищает ошибки.
+- `resetForm(): void` — очищает данные модели данных форм.
+- `getValidationErrors(): FormValidationErrors ` — возвращает ошибки валидации.
+- `setPaymentMethod(method: 'card' | 'cash') ` — записывает способ оплаты в модель данных.
+- `updateAddress(field: string, value: string)` — записывает адресс в модель данных.
+- `validateAddress(): boolean` — проверяет валидность заполнения адресса.
+оплаты в модель данных.
+- `updateContactInfo(field: string, value: string)` — записывает контакты в модель данных.
+- `validateContactInfo(): boolean` — проверяет валидность заполнения контактов.
+- `validateForms(): boolean ` — проверяет валидность заполнения двух форм.
+``` 
 
 ---
 
@@ -92,93 +112,144 @@ yarn build
 - `galleryContainer: HTMLElement` — контейнер для галереи товаров.
 - `basketButton: HTMLButtonElement` — кнопка корзины (class="header__basket").
 - `basketCounter: HTMLElement` — счётчик товаров (class="header__basket-counter").
-- `_products: IProductItem[]` — приватный массив продуктов.
-- `previewProduct: IProductItem` — текущий выбранный продукт для детального просмотра.
 
 **Методы:**
-- `renderGallery(cards: HTMLElement[]): void` — отображает массив карточек товаров.
-- `setBasketCount(count: number): void` — обновляет счётчик товаров.
-- `setBasketClickHandler(handler: () => void): void` — устанавливает обработчик клика на корзину.
-- `set products(data: IProductItem[])` — сохраняет список продуктов.
-- `get products()` — возвращает список продуктов.
-- `setActiveProduct(item: IProductItem)` — устанавливает активный продукт.
+- `set content(cards: HTMLElement[])` — обновляет массив карточек товаров в галерее.
+- `set counter(value: number)` — обновляет счётчик товаров.
 ```
 
 - `Card` —  универсальный класс для создания карточек товара.
 ```
+**Поля:**
+- `cardTitle: HTMLElement;` — контейнер для названия товара.
+- `cardPrice: HTMLElement;` — контейнер для цены товара.
+- `id: string;` — id товара.
+
 **Конструктор:**
-- `constructor(template: HTMLTemplateElement, handleClick?: (event: MouseEvent) => void)` 
+- `constructor(container: HTMLElement, protected events: IEvents)` 
 
 **Методы:**
-- `renderGallery(data: IProductItem): HTMLElement` — создаёт карточку для галереи.
-- `renderPreview(data: IProductItem): HTMLElement` — создаёт карточку для предпросмотра.
-- `renderBasket(item: IBasketItem): HTMLElement` — создаёт карточку для корзины.
+- `set title(value: string)` — обновляет название товара.
+- `get title(): string` — возвращает название товара.
+- `set price(value: number | null)` — обновляет цену товара.
+```
+
+- `CardGallery` —  класс для создания карточки товара в галерее. Наследуется от класса `Card`.
+```
+**Поля:**
+- `cardCategory: HTMLElement;` — контейнер для категории товара.
+- `cardImage: HTMLImageElement;` — контейнер для картинки товара.
+
+**Конструктор:**
+- `constructor(container: HTMLElement, protected events: IEvents)` 
+
+**Методы:**
+- `set category(value: string)` — обновляет категорию товара.
+- `get category(): string` — возвращает категорию товара.
+- `set image(value: string)` — обновляет картинку товара.
+```
+
+- `CardPreview` —  класс для создания карточки товара превью. Наследуется от класса `Card`.
+```
+**Поля:**
+- `сardDescription: HTMLElement;` — контейнер для описания товара.
+- `cardButtonBuy: HTMLButtonElement;` — кнопка покупки в карточке.
+
+**Конструктор:**
+- `constructor(container: HTMLElement, protected events: IEvents)` 
+
+**Методы:**
+- `set description(value: string)` — обновляет описание товара.
+- `set price(value: number | null)` — обновляет цену товара.
+- `set inBasket(value: boolean)` — обновляет признак наличия в корзине у товара.
+```
+
+- `CardBasket` —  класс для создания карточки товара в корзине. Наследуется от класса `Card`.
+```
+**Поля:**
+- `cardIndex: HTMLElement;` — контейнер для индекса товара в корзине.
+- `cardButtonDelete: HTMLButtonElement;` — кнопка удланеия товара из корзины.
+
+**Конструктор:**
+- `constructor(container: HTMLElement, protected events: IEvents)` 
+
+**Методы:**
+- `set index(value: number)` — обновляет индекс товара.
 ```
 
 - `ModalScreen` —  универсальный класс для модальных окон. Все модальные окна наследуются от него и переопределяют методы для своих нужд.
 ```
 **Поля:**
-- `container: HTMLElement` — контейнер модального окна (class="modal-content").
+- `content: HTMLElement` — контейнер модального окна (class="modal-content").
 - `closeButton: HTMLButtonElement` — кнопка закрытия (class="modal-close").
 
 **Методы:**
+- `set content(value: HTMLElement)` — устанавливает содержимое модального окна.
 - `open(): void` — открывает модальное окно.
 - `close(): void` — закрывает модальное окно, очищает контент.
-- `setContent(content: HTMLElement): void` — устанавливает содержимое модального окна.
+- `render(data: IModalData): HTMLElement` — отображает модальное окно.
 ```
 
 - `BasketScreen` — класс для просмотра содержимого корзины.
 ```
 **Поля:**
-- `container: HTMLElement` — контейнер корзины.
-- `itemsContainer: HTMLElement` — контейнер для списка товаров.
-- `totalAmountElement: HTMLElement` — элемент для отображения суммы.
-- `orderButton: HTMLButtonElement` — кнопка оформления заказа.
-- `basket: IBasketItem[]` — массив продуктов в корзине.
+- `basketListContainer: HTMLElement;` — контейнер корзины.
+- `orderButton: HTMLButtonElement;` — кнопка оформления заказа.
+- `totalAmountElement: HTMLElement;` — элемент для отображения суммы.
+- `productsInBasket: string[];` — контейнер для списка товаров.
+
+**Конструктор:**
+- `constructor(container: HTMLElement, protected events: IEvents)` 
  
  **Методы:**
-- `render(items: HTMLElement[], total: number): void` — отображает товары и сумму.
-- `setOrderHandler(handler: () => void): void` — устанавливает обработчик оформления заказа.
-- `getProducts(): IProductItem[]` — возвращает копию списка продуктов в корзине.
-- `getTotalCount(): number` — возвращает общее количество товаров (уникальных позиций).
-- `calculateTotalAmount(): number` — возвращает общую стоимость товаров.
-- `addProduct(product: IProductItem): void` — добавляет продукт в корзину (если его еще нет).
-- `removeProduct(product: IProductItem): void` — удаляет продукт из корзины.
-- `clearCart(): void` — очищает корзину.
+- `set content(cards: HTMLElement[])` — устанавливает содержимое корзины.
+- `set totalAmount(value: string)` — устанавливает сумму товаров в корзине.
 ```
 
 - `ContactScreen` — класс отображает форму для ввода контактных данных.
 ```
 **Поля:**
-- `form: HTMLFormElement` — элемент формы.
-- `emailInput: HTMLInputElement` — поле email.
-- `phoneInput: HTMLInputElement` — поле телефона.
-- `submitButton: HTMLButtonElement` — кнопка отправки.
+- `contactForm: HTMLFormElement;` — элемент формы.
+- `emailInput: HTMLInputElement;` — поле email.
+- `phoneInput: HTMLInputElement;` — поле телефона.
+- `formErrors: HTMLElement;` — поле для ошибок.
+- `orderButton: HTMLButtonElement;` — кнопка отправки.
 
+**Конструктор:**
+- `constructor(container: HTMLElement, protected events: IEvents)` 
+ 
  **Методы:**
-- `getData(): IOrderForm` — возвращает введенные данные.
-- `setSubmitHandler(handler: () => void): void` — устанавливает обработчик отправки.
-- `showErrors(errors: TFormValidationErrors): void` — отображает ошибки валидации.
+- `set isValid(value: boolean)` — обновляет корректность валидации.
+- `displayErrors(errors: string[]): void` — показывет ошибки в запонении формы.
+- `set email(value: string)` — обновляет email.
+- `get email(): string ` — возвращает email.
+- `set phone(value: string)` — обновляет телефон.
+- `get phone(): string ` — возвращает телефон.
 - `reset(): void` — сбрасывает значения формы.
+- `render(): HTMLElement` —  отображает окно с контактами.
 ```
 
 - `DeliveryScreen` — класс отображает форму для ввода адреса и выбора способа оплаты.
 ```
 **Поля::**
-- `form: HTMLFormElement` — элемент формы.
+- `deliveryForm: HTMLFormElement;` — элемент формы.
 - `addressInput: HTMLInputElement` — поле адреса.
-- `cardPaymentRadio: HTMLInputElement` — переключатель оплаты картой.
-- `cashPaymentRadio: HTMLInputElement` — переключатель оплаты наличными.
-- `submitButton: HTMLButtonElement` — кнопка отправки.
-- `order: IOrder` — данные заказа.
+- `formErrors: HTMLElement` — поле для ошибок.
+- `orderButton: HTMLButtonElement` — кнопка отправки.
+- `paymentButtons: HTMLButtonElement[];` — кнопки для выбора способа оплаты.
 
-**Методы:**
-- `getData(): { address: string, payment: 'card' | 'cash' | '' }` — возвращает введенные данные.
-- `setSubmitHandler(handler: () => void): void` — устанавливает обработчик отправки.
-- `showErrors(errors: TFormErrors): void` — отображает ошибки валидации.
+**Конструктор:**
+- `constructor(container: HTMLElement, protected events: IEvents)` 
+ 
+
+ **Методы:**
+- `set address(value: string)` — обновляет адресс.
+- `get address(): string` — возвращает адресс.
+- `set payment(value: 'card' | 'cash')` — обновляет способ оплаты.
+- `set isValid(value: boolean)` — обновляет корректность валидации.
+- `displayErrors(errors: string[]): void` — показывет ошибки в запонении формы.
 - `reset(): void` — сбрасывает значения формы.
-- `validateOrder(): boolean` — проверяет валидность данных заказа. Возвращает true, если валидация прошла успешно, иначе false.
-- `submitOrder(): Promise` — отправляет заказ на сервер.
+- `render(): HTMLElement` —  отображает окно с контактами.
 ```
 
 - `SuccessScreen` — класс отображает сообщение об успешном оформлении заказа.
@@ -186,11 +257,14 @@ yarn build
 **Поля:**
 - `container: HTMLElement` — контейнер сообщения.
 - `closeButton: HTMLButtonElement` — кнопка закрытия.
-- `totalElement: HTMLElement` — элемент для отображения суммы заказа.
+- `totalElement: HTMLElement` — элемент для отображения суммы заказа.- `totalAmount: number;` — сумма заказа.
 
+**Конструктор:**
+- `constructor(container: HTMLElement, protected events: IEvents)` 
+ 
 **Методы:**
-- `show(total: number): void` — отображает сообщение с суммой заказа.
-- `setCloseHandler(handler: () => void): void` — устанавливает обработчик закрытия.
+- `set totalAmount(value: number)` — обновляет сумма заказа.
+- `render(): HTMLElement` —  отображает окно с успехом.
 ```
 
 ---
@@ -221,6 +295,7 @@ yarn build
 	image: string; // URL-адрес изображения продукта
 	category: string; // категория продукта
 	price: number | null; // цена продукта, если нет цены, то товар бесценен
+    inBasket: boolean; // наличие продукта в корзине
 ```
 
 - `IBasketItem` — товар в корзине (дополнительно index).
@@ -228,28 +303,22 @@ yarn build
 	index: number;
 ```
 
-- `IActions` — интерфейс, который описывает обработчик событий по клику мыши.
-```
-	handleClick?: (event: MouseEvent) => void;
-```
-
 - `IOrderForm` — интерфейс, который описывает данные в форме заказа. 
 ```
-	paymentMethod?: 'card' | 'cash' | ''; // способ оплаты
+	paymentMethod?: 'card' | 'cash'; // способ оплаты
 	deliveryAddress?: string; // адрес доставки 
 	contactPhone?: string; // контактный номер телефона
 	contactEmail?: string; // контактный адрес электронной почты
-	totalAmount?: number; // общая стоимость заказа 
 ```
 
 - `IOrder` — интерфейс, который описывает полные данные заказа для отправки по API. 
 ```
-	paymentMethod: 'card' | 'cash' | ''; // способ оплаты
-	deliveryAddress: string; // адрес доставки 
-	contactPhone: string; // контактный номер телефона
-	contactEmail: string; // контактный адрес электронной почты
-	productItems: string[]; // массив идентификаторов продуктов, которые были выбраны пользователем
-	totalAmount: number; // общая стоимость заказа 
+	total: number; // общая стоимость заказа 
+    items: string[]; // массив идентификаторов продуктов, которые были выбраны пользователем
+    email: string; // контактный адрес электронной почты
+    phone: string; // контактный номер телефона
+    address: string; // адрес доставки 
+    payment: 'card' | 'cash'; // способ оплаты
 ```
 
 - `IOrderResult` — интерфейс, который описывает результат успешного заказа от API.
@@ -258,7 +327,7 @@ yarn build
 	totalAmount: number; // общая стоимость заказа 
 ```
 
-- `TFormValidationErrors` — тип ошибки валидации формы.
+- `FormValidationErrors` — тип ошибки валидации формы.
 ```
 type FormValidationErrors = Partial<Record<keyof IOrder, string>>; // отображает каждое поле формы (например, payment, address, phone, и т. д.) в строке ошибки.
 ```
@@ -292,4 +361,16 @@ type FormValidationErrors = Partial<Record<keyof IOrder, string>>; // отобр
 - `setHidden` — скрывает переданный элемент.
 - `setVisible` — отображает переданный элемент.
 - `render` — рендерит компонент, используя переданные данные. Метод должен быть переназначен в дочерних классах.
+```
+
+
+---
+
+## Api для проекта
+- `LarekApi` — класс для работы с сервера проекта.
+```
+**Методы:**
+- `getProducts(): Promise<IProductItem[]>` — GET-запрос продуктов.
+- `getProductItem(id: string): Promise<IProductItem>` — GET-запрос продукта по id.
+- `orderProducts(order: IOrder): Promise<IOrderResult>` — обработка ответа сервера.
 ```

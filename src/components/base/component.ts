@@ -1,5 +1,3 @@
-import { IEvents } from './events.js';
-
 /**
  * Базовый компонент
  */
