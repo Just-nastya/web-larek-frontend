@@ -66,8 +66,6 @@ const successScreen = new SuccessScreen(cloneTemplate(successTemplate), events);
 api.getProducts()
     .then(results => {
         cardModel.setItems(results);
-        events.emit('gallery:changed');
-
     })
     .catch(err => {
         console.error(err);
@@ -191,7 +189,6 @@ events.on('order:complete', () => {
 			cardModel.clearBasket();
 			formModel.resetForm();
 			formModel.clearErrors();
-            events.emit('gallery:changed');
 		})
 		.catch((error) => {
 			let errorMessage = 'Произошла ошибка при оформлении заказа.';
@@ -212,15 +209,9 @@ events.on('order:close', () => {
 
 // Нажимаем на кнопку купить в карточке превью
 events.on('card:buy', ({id}: {id: string}) => {
-    const cardData = cardModel.getItem(id);
-    if (!cardData.inBasket) {
-        cardData.inBasket = true; 
-    } else {
-        cardData.inBasket = false; 
-    }
+    cardModel.setItem(id);
     modalScreen.close();
     events.emit('modal:close');
-    events.emit('gallery:changed');
 });
 
 // Перерисовываем корзину
@@ -242,17 +233,16 @@ events.on('basket:changed', () => {
 
 // Удаляем из корзины карточку
 events.on('basket:delete-item', ({id}: {id: string}) => {
-    cardModel.getItem(id).inBasket = false; 
+    cardModel.setItem(id); 
     events.emit('basket:changed');
-    events.emit('gallery:changed');
 });
 
 // Блокируем прокрутку страницы
 events.on('modal:open', () => {
-    pageWrapper.classList.add('page__wrapper_locked');
+    mainScreen.blockPage();
 });
 
 // Разблокируем прокрутку страницы
 events.on('modal:close', () => {
-    pageWrapper.classList.remove('page__wrapper_locked');
+    mainScreen.unblockPage();
 });

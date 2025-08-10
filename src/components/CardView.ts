@@ -94,7 +94,7 @@ export class CardGallery extends Card {
 
 
 // Карточка превью
-export class CardPreview extends Card {
+export class CardPreview extends CardGallery {
     cardDescription: HTMLElement;
     cardButtonBuy: HTMLButtonElement;
 

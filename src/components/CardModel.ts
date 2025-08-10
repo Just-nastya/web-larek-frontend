@@ -8,7 +8,22 @@ export class CardModel {
 
     setItems(items: IProductItem[]) {
         this.items = items;
+        this.events.emit('gallery:changed');
     }
+
+    setItem(id:string) {
+        const item = this.getItem(id);
+        if (!item.inBasket) {
+            item.inBasket = true;
+        } else {
+            item.inBasket = false;
+        }
+        this.items = this.items.map(function(item) {
+            return item;
+        });
+        this.setItems(this.items);
+    }
+
 
     getItems(): IProductItem[] {
         return this.items;
@@ -37,6 +52,6 @@ export class CardModel {
             item.inBasket=false;
             return item;
         });
-        this.events.emit('gallery:changed');
+        this.setItems(this.items);
 	}
 }
